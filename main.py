@@ -12,8 +12,8 @@ from hashlib import sha256
 app = FastAPI()
 security = HTTPBasic()
 
-app.config = dotenv_values(".env")
-app.secret_key = app.config['SECRET']
+app.secret_key = getenv("SECRET")
+# app.secret_key = app.config[]
 app.session_token = ''
 
 @app.get("/")
