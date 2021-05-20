@@ -23,10 +23,6 @@ def root():
 class ContentRequest(BaseModel):
 	content: str
 
-# @app.get("/secret_key")
-# async def key():
-# 	return app.secret_key
-
 @app.on_event("startup")
 async def startup():
     app.db_connection = sqlite3.connect("textsdb.db")
@@ -149,21 +145,4 @@ def check_credentials(password: str, username: str):
 		return True
 	else:
 		return False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
