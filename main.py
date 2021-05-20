@@ -12,7 +12,7 @@ from hashlib import sha256
 app = FastAPI()
 security = HTTPBasic()
 
-app.secret_key = getenv("SECRET")
+app.secret_key = os.getenv("SECRET")
 # app.secret_key = app.config[]
 app.session_token = ''
 
