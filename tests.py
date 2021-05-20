@@ -44,3 +44,4 @@ def test_delete():
 		delete_response = client.delete(f"/texts/{new_id}")
 		get_deleted_response = client.get(f"/texts/{new_id}")
 		assert get_deleted_response.status_code == 404
+a
