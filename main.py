@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Response, Request, status, Cookie, HTTPException, Depends
+from fastapi import FastAPI, Response, Request, status, Cookie, HTTPException, Depends, Cookie
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
 from pydantic import BaseModel
@@ -9,11 +9,15 @@ import os
 from dotenv import dotenv_values
 import random
 from hashlib import sha256
+from os import environ
 app = FastAPI()
 security = HTTPBasic()
 
 app.secret_key = os.getenv("SECRET")
-# app.secret_key = app.config[]
+if "SECRET" not in os.environ:
+ 	app.config = dotenv_values(".env")
+ 	app.secret_key = app.config['SECRET']
+
 app.session_token = ''
 
 @app.get("/")
@@ -50,7 +54,9 @@ async def texts(id: str):
     return {"Content": data['Content'], "Views": data['Views']}
 
 @app.put("/texts/{id}")
-async def update(request: ContentRequest, id: int):
+async def update(request: ContentRequest, id: int, session_token: str = Cookie(None)):
+	if not check_session(session_token):
+		raise HTTPException(status_code=401, detail="Unathorised")
 	content = request.content;
 	app.db_connection.row_factory = sqlite3.Row
 	count = app.db_connection.execute("SELECT Count(*) as C FROM Texts WHERE ID = ?", (id,)).fetchone()
@@ -64,7 +70,9 @@ async def update(request: ContentRequest, id: int):
 	}
 
 @app.delete("/texts/{id}")
-async def delete(id: int):
+async def delete(id: int, session_token: str = Cookie(None)):
+	if not check_session(session_token):
+		raise HTTPException(status_code=401, detail="Unathorised")
 	app.db_connection.row_factory = sqlite3.Row
 	count = app.db_connection.execute("SELECT Count(*) as C FROM Texts WHERE ID = ?", (id,)).fetchone()
 	if count['C'] == 0:
@@ -74,7 +82,9 @@ async def delete(id: int):
 	return "Deleted"
 
 @app.post("/texts")
-async def insert(response: Response, request: ContentRequest):
+async def insert(response: Response, request: ContentRequest, session_token: str = Cookie(None)):
+	if not check_session(session_token):
+		raise HTTPException(status_code=401, detail="Unathorised")
 	content = request.content
 	cursor = app.db_connection.execute(f"INSERT INTO Texts (Content, Views) VALUES (?, ?)", (content,0))
 	app.db_connection.commit()
@@ -99,13 +109,22 @@ async def login_token(request: Request, response: Response, credentials: HTTPBas
 		token = generate_token(credentials)
 		store_token(token)
 		response.status_code = 201
+		response.set_cookie(key="session_token", value=token)
 		return {"token": token}
 	else:
-		response.status_code = 401	
+		raise HTTPException(status_code=401, detail="Unathorised login")
+
+@app.delete("/logout")
+async def logout(request: Request, response: Response, session_token: str = Cookie(None)):
+	if session_token == app.session_token:
+		app.session_token = ''
+		return "Logged out"
+	else:
+		raise HTTPException(status_code=401, detail="Unathorised logout")
 
 @app.get("/check")
-async def check_login(token: str):
-	return check_session(token)
+async def check_login(session_token: str = Cookie(None)):
+	return check_session(session_token)
 
 
 def generate_token(credentials: HTTPBasicCredentials):
@@ -145,4 +164,21 @@ def check_credentials(password: str, username: str):
 		return True
 	else:
 		return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
