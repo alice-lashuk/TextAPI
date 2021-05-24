@@ -21,7 +21,7 @@ if "SECRET" not in os.environ:
 app.session_token = ''
 @app.get("/")
 def root():
-    return {"message": "Hello World"}
+    return {"message": "Welcome"}
 
 class ContentRequest(BaseModel):
 	content: str
@@ -46,7 +46,7 @@ async def texts(id: str):
                           WHERE ID = ?
                           """,  (id,)).fetchone()
     if data == None:
-    	raise HTTPException(status_code=404, detail="Tet not found")
+    	raise HTTPException(status_code=404, detail="Text not found")
     views = data['Views']
     app.db_connection.execute("UPDATE Texts SET Views = (?) where ID = ?", (views+1,id,))
     app.db_connection.commit()
@@ -125,11 +125,6 @@ async def logout(request: Request, response: Response, session_token: str = Cook
 		return "Logged out"
 	else:
 		raise HTTPException(status_code=401, detail="Unathorised logout")
-
-# @app.get("/check")
-# async def check_login(session_token: str = Cookie(None)):
-# 	return check_session(session_token)
-
 
 def generate_token(credentials: HTTPBasicCredentials):
 	seed = credentials.username + credentials.password + str(random.randint(0, 1000)) + app.secret_key
