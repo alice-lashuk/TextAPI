@@ -1,5 +1,6 @@
 # API for inserting, retrieving, editing and deleting small texts
 
+Link to the application deployed on Heroku [link](https://textapi-alicelashuk.herokuapp.com/)
 ## Run the app
 
     uvicorn main:app
