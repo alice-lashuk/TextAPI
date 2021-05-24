@@ -13,6 +13,8 @@
 ### Request
 Uses Basic authentication scheme
 
+Url `http://127.0.0.1:8000/register`
+
 `POST /register`
 
     curl -X 'POST' 'http://127.0.0.1:8000/register' -H 'accept: application/json' -H 'Authorization: Basic czpkZmhydGV0dWV0eXRy' -d ''
@@ -31,6 +33,9 @@ Uses Basic authentication scheme
 ## Register with already existing username
 ### Request
 Uses Basic authentication scheme
+
+Url `http://127.0.0.1:8000/register`
+
 
 `POST /register`
 
@@ -51,6 +56,9 @@ Uses Basic authentication scheme
 ### Request
 Uses Basic authentication scheme
 
+Url `http://127.0.0.1:8000/login`
+
+
 `POST /login`
 
     curl -X 'POST' 'http://127.0.0.1:8000/login' -H 'accept: application/json' -H 'Authorization: Basic YWxpY2U6cGFzcw==' -d ''
@@ -70,6 +78,9 @@ Uses Basic authentication scheme
 ### Request
 Uses Basic authentication scheme
 
+Url `http://127.0.0.1:8000/login`
+
+
 `POST /login`
 
     curl -X 'POST' 'http://127.0.0.1:8000/login' -H 'accept: application/json' -H 'Authorization: Basic YWw6cw==' -d ''
@@ -88,6 +99,9 @@ Uses Basic authentication scheme
 ## Unautharized log out
 ### Request
 
+Url `http://127.0.0.1:8000/login`
+
+
 `POST /logout`
 
     curl -X 'DELETE' 'http://127.0.0.1:8000/logout' -H 'accept: application/json' -H 'Cookie: session_token=sfdfg'
@@ -105,6 +119,9 @@ Uses Basic authentication scheme
   
 ## Log out
 ### Request
+
+Url `http://127.0.0.1:8000/logout`
+
 
 `POST /logout`
 
@@ -125,6 +142,9 @@ Uses Basic authentication scheme
 
 ### Request
 
+Url `http://127.0.0.1:8000/texts/8`
+
+
 `GET /texts/id`
 
     curl -X 'GET' 'http://127.0.0.1:8000/texts/8' -H 'accept: application/json'
@@ -142,6 +162,9 @@ Uses Basic authentication scheme
 ## Get text by non-existent id
 
 ### Request
+
+Url `http://127.0.0.1:8000/texts/189`
+
 
 `GET /texts/id`
 
@@ -161,6 +184,8 @@ Uses Basic authentication scheme
 For authorised users only 
 ### Request
 
+Url `http://127.0.0.1:8000/texts`
+
 `POST /texts`
 
     curl -X 'POST' 'http://127.0.0.1:8000/texts' -H 'accept: application/json' -H 'Cookie: session_token=149a2637a75198d31584aea83075199198a494f3aa8c68a78604380fb9e17c65' -H 'Content-Type: application/json' -d '{"content": "some text"}'
@@ -178,6 +203,9 @@ For authorised users only
 ## Update text by id
 For authorised users only 
 ### Request
+
+Url `http://127.0.0.1:8000/texts/15`
+
 
 `PUT /texts/id`
 
@@ -197,6 +225,9 @@ For authorised users only
 For authorised users only 
 ### Request
 
+Url `http://127.0.0.1:8000/texts/1`
+
+
 `PUT /texts/id`
 
     curl -X 'PUT' 'http://127.0.0.1:8000/texts/1' -H 'accept: application/json' -H 'Cookie: session_token=149a2637a75198d31584aea83075199198a494f3aa8c68a78604380fb9e17c65' -H 'Content-Type: application/json' -d '{"content": "new text"}'
@@ -215,6 +246,9 @@ For authorised users only
 For authorised users only 
 ### Request
 
+Url `http://127.0.0.1:8000/texts/72`
+
+
 `DELETE /texts/id`
 
     curl -X 'DELETE' 'http://127.0.0.1:8000/texts/72' -H 'accept: application/json' -H 'Cookie: session_token=149a2637a75198d31584aea83075199198a494f3aa8c68a78604380fb9e17c65'
@@ -232,6 +266,9 @@ For authorised users only
 ## Delete text by non-existent id
 For authorised users only 
 ### Request
+
+Url `http://127.0.0.1:8000/texts/72098`
+
 
 `DELETE /texts/id`
 
