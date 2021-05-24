@@ -19,7 +19,6 @@ if "SECRET" not in os.environ:
  	app.secret_key = app.config['SECRET']
 
 app.session_token = ''
-
 @app.get("/")
 def root():
     return {"message": "Hello World"}
@@ -47,7 +46,7 @@ async def texts(id: str):
                           WHERE ID = ?
                           """,  (id,)).fetchone()
     if data == None:
-    	raise HTTPException(status_code=404, detail="Product not found")
+    	raise HTTPException(status_code=404, detail="Tet not found")
     views = data['Views']
     app.db_connection.execute("UPDATE Texts SET Views = (?) where ID = ?", (views+1,id,))
     app.db_connection.commit()
@@ -97,7 +96,12 @@ async def insert(response: Response, request: ContentRequest, session_token: str
 
 @app.post("/register")
 async def insert(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-	salt, key = get_hashed_password(credentials.password, generate_salt())
+	app.db_connection.row_factory = sqlite3.Row
+	count = app.db_connection.execute("SELECT Count(*) as C FROM users WHERE username = ?", (credentials.username,)).fetchone()
+	if count['C'] > 0:
+		raise HTTPException(status_code=409, detail="username already exists")
+	salt = generate_salt()
+	key = get_hashed_password(credentials.password, salt)
 	cursor = app.db_connection.execute(f"INSERT INTO users (username, hashedPassword, salt) VALUES(?, ?, ?)", (credentials.username, key, salt))
 	app.db_connection.commit()
 	response.status_code = 201
@@ -122,9 +126,9 @@ async def logout(request: Request, response: Response, session_token: str = Cook
 	else:
 		raise HTTPException(status_code=401, detail="Unathorised logout")
 
-@app.get("/check")
-async def check_login(session_token: str = Cookie(None)):
-	return check_session(session_token)
+# @app.get("/check")
+# async def check_login(session_token: str = Cookie(None)):
+# 	return check_session(session_token)
 
 
 def generate_token(credentials: HTTPBasicCredentials):
@@ -156,7 +160,7 @@ def check_credentials(password: str, username: str):
                           WHERE username = ?
                           """,  (username,)).fetchone()
 	if data == None:
-		raise HTTPException(status_code=404, detail="User not found")
+		return False
 	password_from_db = data['hashedPassword']
 	salt = data['salt']
 	new_hashed_password = get_hashed_password(password, salt)
@@ -164,6 +168,16 @@ def check_credentials(password: str, username: str):
 		return True
 	else:
 		return False
+
+def delete_from_db(username: str):
+	app.db_connection.execute("DELETE FROM users WHERE username = ?",(username,))
+	app.db_connection.commit()
+
+def delete_text_by_id(id: int):
+	app.db_connection.execute("DELETE FROM Texts WHERE id = ?",(id,))
+	app.db_connection.commit()
+
+
 
 
 
